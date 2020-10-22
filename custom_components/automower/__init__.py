@@ -165,7 +165,7 @@ class AutomowerEntity(VacuumEntity):
                     # Sometimes(tm), Husqvarna will return a timestamp in millis :(
                     if attributes[key] > 999999999999:
                         attributes[key] /= 1000.0
-                    attributes[key] = datetime.utcfromtimestamp(attributes[key])
+                    attributes[key] = datetime.fromtimestamp(attributes[key]).strftime("%Y-%m-%d %H:%M")
 
         # Ignore some unneeded attributes & format error messages
         ignored_attributes = list(IGNORED_API_STATE_ATTRIBUTES)
