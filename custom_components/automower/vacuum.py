@@ -1,6 +1,8 @@
 """Vacuum for Husqvarna Automowers"""
+from datetime import timedelta
+from .const import DOMAIN, VACUUM_SCAN_INTERVAL
 
-from .const import DOMAIN
+SCAN_INTERVAL = timedelta(seconds=VACUUM_SCAN_INTERVAL)
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the Husqvarna Automower sensor platform."""
