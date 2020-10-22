@@ -1,0 +1,10 @@
+{
+  "domain": "automower",
+  "name": "Automower",
+  "config_flow": true,
+  "documentation": "https://github.com/astrandb/automower_hass",
+  "requirements": [],
+  "codeowners": [
+    "@astrandb"
+  ]
+}
