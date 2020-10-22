@@ -1,0 +1,23 @@
+{
+  "state":
+  {"automower":
+    {
+      "ERROR": "Fel",
+      "EXECUTING_PARK": "Parkerar...",
+      "EXECUTING_START": "Startar...",
+      "EXECUTING_STOP": "Stannar...",
+      "OFF_DISABLED": "Avstängd",
+      "OFF_HATCH_CLOSED_DISABLED": "Stoppad utanför bas",
+      "OFF_HATCH_OPEN": "Luckan öppen",
+      "OK_CHARGING": "Laddar",
+      "OK_CUTTING": "Klipper",
+      "OK_CUTTING_NOT_AUTO": "Klipper manuellt",
+      "OK_LEAVING": "Lämnar laddstationen",
+      "OK_SEARCHING": "Söker laddstationen",
+      "PARKED_TIMER": "Parkerad av timer",
+      "PARKED_AUTO_TIMER": "Parkerad av timer",
+      "PARKED_PARKED_SELECTED": "Parkerad manuellt",
+      "PAUSED": "Paus"
+    }
+  }
+}

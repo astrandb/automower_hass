@@ -1,83 +1,146 @@
-"""The Automower integration."""
-import asyncio
-import logging, copy
-from datetime import datetime
+"""
+Platform for Husqvarna Automowers.
 
-from homeassistant.util import slugify
+For more details about this component, please refer to the documentation
+https://home-assistant.io/components/automower/
+"""
+
+import copy
+import logging
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_ICON, CONF_USERNAME, CONF_PASSWORD
-from homeassistant.core import HomeAssistant
-from pyhusmow import API as HUSMOW_API
-from homeassistant.components.vacuum import (
+from datetime import datetime
+from homeassistant.const import CONF_ICON, CONF_PASSWORD, CONF_SCAN_INTERVAL, CONF_USERNAME
+try:
+    from homeassistant.components.vacuum import (
     SUPPORT_BATTERY, SUPPORT_PAUSE, SUPPORT_RETURN_HOME,
     SUPPORT_STATUS, SUPPORT_STOP, SUPPORT_TURN_OFF,
     SUPPORT_TURN_ON, VacuumEntity)
+except ImportError:
+    from homeassistant.components.vacuum import (
+    SUPPORT_BATTERY, SUPPORT_PAUSE, SUPPORT_RETURN_HOME,
+    SUPPORT_STATUS, SUPPORT_STOP, SUPPORT_TURN_OFF,
+    SUPPORT_TURN_ON, VacuumDevice as VacuumEntity)
 
-from .const import (
-    DOMAIN, STATUSES, MODELS, DEFAULT_ICON, IGNORED_API_STATE_ATTRIBUTES,
-    ERROR_MESSAGES, SUPPORTED_FEATURES, STATUS_EXECUTING_PARK, STATUS_EXECUTING_START,
-    STATUS_EXECUTING_STOP, STATUS_OK_CUTTING, STATUS_OK_LEAVING, STATUS_OK_SEARCHING,
-    STATUS_OK_CUTTING_MANUAL, STATUS_OK_CHARGING, VENDOR
-)
-CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema({})}, extra=vol.ALLOW_EXTRA)
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import discovery
+from homeassistant.util import slugify
+
 _LOGGER = logging.getLogger(__name__)
 
-# TODO List the platforms that you want to support.
-# For your initial PR, limit it to 1 platform.
-PLATFORMS = ["vacuum"]
+DEFAULT_ICON = 'mdi:robot-mower'
+DOMAIN = 'automower'
+REQUIREMENTS = ['pyhusmow==0.1.1']
+VENDOR = 'Husqvarna'
+
+# TODO: Add more statuses as we observe them
+STATUS_ERROR =                  'ERROR'
+STATUS_OK_CHARGING =            'OK_CHARGING'
+STATUS_OK_CUTTING =             'OK_CUTTING'
+STATUS_OK_CUTTING_MANUAL =      'OK_CUTTING_NOT_AUTO'
+STATUS_OK_LEAVING =             'OK_LEAVING'
+STATUS_OK_SEARCHING =           'OK_SEARCHING'
+STATUS_PARKED_TIMER =           'PARKED_TIMER'
+STATUS_PARKED_AUTOTIMER =       'PARKED_AUTOTIMER'
+STATUS_PARKED_PARKED_SELECTED = 'PARKED_PARKED_SELECTED'
+STATUS_PAUSED =                 'PAUSED'
+STATUS_EXECUTING_PARK =         'EXECUTING_PARK'
+STATUS_EXECUTING_START =        'EXECUTING_START'
+STATUS_EXECUTING_STOP =         'EXECUTING_STOP'
+STATUS_OFF_HATCH_OPEN =         'OFF_HATCH_OPEN'
+STATUS_OFF_HATCH_CLOSED =       'OFF_HATCH_CLOSED_DISABLED'
+STATUS_OFF_DISABLED =           'OFF_DISABLED'
+
+STATUSES = {
+    STATUS_ERROR:                   { 'icon': 'mdi:alert',          'message': 'Error' },
+    STATUS_OK_CHARGING:             { 'icon': 'mdi:power-plug',     'message': 'Charging' },
+    STATUS_OK_CUTTING:              { 'icon': DEFAULT_ICON,         'message': 'Cutting' },
+    STATUS_OK_CUTTING_MANUAL:       { 'icon': DEFAULT_ICON,         'message': 'Cutting (manual timer override)' },
+    STATUS_OK_LEAVING:              { 'icon': DEFAULT_ICON,         'message': 'Leaving charging station' },
+    STATUS_PAUSED:                  { 'icon': 'mdi:pause',          'message': 'Paused' },
+    STATUS_PARKED_TIMER:            { 'icon': 'mdi:timetable',      'message': 'Parked due to timer' },
+    STATUS_PARKED_AUTOTIMER:        { 'icon': 'mdi:timetable',      'message': 'Parked due to weather timer' },
+    STATUS_PARKED_PARKED_SELECTED:  { 'icon': 'mdi:sleep',          'message': 'Parked manually' },
+    STATUS_OK_SEARCHING:            { 'icon': 'mdi:magnify',        'message': 'Going to charging station' },
+    STATUS_EXECUTING_START:         { 'icon': 'mdi:dots-horizontal','message': 'Starting...' },
+    STATUS_EXECUTING_STOP:          { 'icon': 'mdi:dots-horizontal','message': 'Stopping...' },
+    STATUS_EXECUTING_PARK:          { 'icon': 'mdi:dots-horizontal','message': 'Preparing to park...' },
+    STATUS_OFF_HATCH_OPEN:          { 'icon': 'mdi:alert',          'message': 'Hatch opened' },
+    STATUS_OFF_HATCH_CLOSED:        { 'icon': 'mdi:pause',          'message': 'Stopped but not on base' },
+    STATUS_OFF_DISABLED:            { 'icon': 'mdi:close-circle-outline', 'message': 'Off'}
+}
+
+# TODO: Add more error messages as we observe them
+ERROR_MESSAGES = {
+    1:  'Outside working area',
+    2:  'No loop signal',
+    9:  'Trapped',
+    10: 'Upside down',
+    12: 'Empty battery',
+    13: 'No drive',
+    25: 'Cutting system blocked'
+}
+
+# TODO: Add more models as we observe them
+MODELS = {
+    'E': 'Automower 420',
+    'G': 'Automower 430X',
+    'H': 'Automower 450X',
+    'K': 'Automower 310',
+    'L': 'Automower 315/X'
+}
+
+IGNORED_API_STATE_ATTRIBUTES = [
+    'batteryPercent',
+    'cachedSettingsUUID',
+    'lastLocations',
+    'mowerStatus',
+    'valueFound'
+]
+
+AUTOMOWER_COMPONENTS = [
+    'device_tracker', 'vacuum'
+]
+
+SUPPORTED_FEATURES = SUPPORT_TURN_ON | SUPPORT_TURN_OFF | SUPPORT_PAUSE | \
+                     SUPPORT_STOP | SUPPORT_RETURN_HOME | \
+                     SUPPORT_STATUS | SUPPORT_BATTERY
 
 
-async def async_setup(hass: HomeAssistant, config: dict):
-    """Set up the Automower component."""
-    return True
+CONFIG_SCHEMA = vol.Schema({
+    DOMAIN: vol.Schema({
+        vol.Required(CONF_USERNAME): cv.string,
+        vol.Required(CONF_PASSWORD): cv.string
+    }),
+}, extra=vol.ALLOW_EXTRA)
 
+def setup(hass, base_config):
+    """Establish connection to Husqvarna Automower API."""
+    from pyhusmow import API as HUSMOW_API
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Set up Automower from a config entry."""
-    # TODO Store an API object for your platforms to access
-    if DOMAIN not in hass.data:
-        hass.data[DOMAIN] = {"entities": []}
+    config = base_config.get(DOMAIN)
 
-#    hass.data[DOMAIN][entry.entry_id] = HUSMOW_API()
+    if hass.data.get(DOMAIN) is None:
+        hass.data[DOMAIN] = { 'devices': [] }
+
     api = HUSMOW_API()
-    api.login(entry.data.get(CONF_USERNAME), entry.data.get(CONF_PASSWORD))
+    api.login(config.get(CONF_USERNAME), config.get(CONF_PASSWORD))
 
     robots = api.list_robots()
-#    robots = await hass.async_add_executor_job(api.list_robots())
+
     if not robots:
         return False
 
     for robot in robots:
-        _LOGGER.debug("Robot: %s", robot)
-        hass.data[DOMAIN]['entities'].append(AutomowerEntity(robot, api))
-#    return True
+        hass.data[DOMAIN]['devices'].append(AutomowerDevice(robot, api))
 
-    for component in PLATFORMS:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, component)
-        )
+    for component in AUTOMOWER_COMPONENTS:
+        discovery.load_platform(hass, component, DOMAIN, {}, base_config)
 
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Unload a config entry."""
-    unload_ok = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, component)
-                for component in PLATFORMS
-            ]
-        )
-    )
-    if unload_ok:
-        hass.data[DOMAIN].pop(entry.entry_id)
-
-    return unload_ok
-
-class AutomowerEntity(VacuumEntity):
+class AutomowerDevice(VacuumEntity):
     """Representation of an Automower device."""
 
     def __init__(self, meta, api):
@@ -99,11 +162,6 @@ class AutomowerEntity(VacuumEntity):
     @property
     def id(self):
         """Return the id of the Automower."""
-        return self._id
-
-    @property
-    def unique_id(self):
-        """Return the unique id of the Automower."""
         return self._id
 
     @property
@@ -129,33 +187,16 @@ class AutomowerEntity(VacuumEntity):
     @property
     def status(self):
         """Return the status of the automower as a nice formatted text (for vacuum platform)."""
-        return self._mower_status #STATUSES.get(self._mower_status, {}).get('message', self._mower_status)
+        return STATUSES.get(self._mower_status, {}).get('message', self._mower_status)
 
     @property
     def state(self):
         """Return the state of the automower (same as status)."""
-        return self._mower_status
-
-    @property
-    def device_class(self):
-        """Return the device class of the automower (same as status)."""
-        return "automower"
-
-    @property
-    def device_info(self):
-        """Device info for automower robot."""
-        info = {"identifiers": {(DOMAIN, self._id)}, "name": self._name}
-        if True:
-            info["manufacturer"] = VENDOR
-            info["model"] = MODELS.get(self._model,self._model)
-        return info
+        return self.status
 
     @property
     def device_state_attributes(self):
         """Return the state attributes of the automower."""
-        if self._state == None:
-            return {}
-
         attributes = dict(self._state)
 
         # Parse timestamps
@@ -181,9 +222,7 @@ class AutomowerEntity(VacuumEntity):
     @property
     def battery(self):
         """Return the battery level of the automower (for device_tracker)."""
-        if self._state == None:
-            return 100
-        return self._state.get('batteryPercent', 100)
+        return self._state['batteryPercent']
 
     @property
     def battery_level(self):
@@ -277,7 +316,7 @@ class AutomowerEntity(VacuumEntity):
         self._see(
             dev_id=self.dev_id,
             host_name=self.name,
-#            battery=self.battery,
+            battery=self.battery,
             gps=(self.lat, self.lon),
             attributes={
                 'status': self.status,

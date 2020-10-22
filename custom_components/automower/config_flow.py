@@ -1,5 +1,6 @@
 """Config flow for Automower integration."""
 import logging
+from pyhusmow import API as HUSMOW_API
 
 import voluptuous as vol
 
@@ -10,22 +11,22 @@ from .const import DOMAIN  # pylint:disable=unused-import
 _LOGGER = logging.getLogger(__name__)
 
 # TODO adjust the data schema to the data that you need
-DATA_SCHEMA = vol.Schema({"host": str, "username": str, "password": str})
+DATA_SCHEMA = vol.Schema({"username": str, "password": str})
 
 
-class PlaceholderHub:
-    """Placeholder class to make tests pass.
+# class PlaceholderHub:
+#     """Placeholder class to make tests pass.
 
-    TODO Remove this placeholder class and replace with things from your PyPI package.
-    """
+#     TODO Remove this placeholder class and replace with things from your PyPI package.
+#     """
 
-    def __init__(self, host):
-        """Initialize."""
-        self.host = host
+#     def __init__(self, host):
+#         """Initialize."""
+#         self.host = host
 
-    async def authenticate(self, username, password) -> bool:
-        """Test if we can authenticate with the host."""
-        return True
+#     async def authenticate(self, username, password) -> bool:
+#         """Test if we can authenticate with the host."""
+#         return True
 
 
 async def validate_input(hass: core.HomeAssistant, data):
@@ -41,10 +42,20 @@ async def validate_input(hass: core.HomeAssistant, data):
     #     your_validate_func, data["username"], data["password"]
     # )
 
-    hub = PlaceholderHub(data["host"])
+#    hub = PlaceholderHub(data["host"])
+    api = HUSMOW_API()
+    try:
+        api.login(data.get("username"), data.get("password"))
 
-    if not await hub.authenticate(data["username"], data["password"]):
+    except InvalidAuth:
         raise InvalidAuth
+
+    # for robot in robots:
+    #     hass.data[DOMAIN]['devices'].append(AutomowerDevice(robot, api))
+
+
+    # if not await hub.authenticate(data["username"], data["password"]):
+    #     raise InvalidAuth
 
     # If you cannot connect:
     # throw CannotConnect
@@ -52,15 +63,14 @@ async def validate_input(hass: core.HomeAssistant, data):
     # InvalidAuth
 
     # Return info that you want to store in the config entry.
-    return {"title": "Name of the device"}
+    return {"title": "Automower"}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Automower."""
 
     VERSION = 1
-    # TODO pick one of the available connection classes in homeassistant/config_entries.py
-    CONNECTION_CLASS = config_entries.CONN_CLASS_UNKNOWN
+    CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
