@@ -3,6 +3,7 @@
   "name": "Automower",
   "config_flow": true,
   "documentation": "https://github.com/astrandb/automower_hass",
+  "issue_tracker": "https://github.com/astrandb/automower_hass/issues",
   "requirements": ["pyhusmow==0.1.1"],
   "codeowners": [
     "@astrandb"
