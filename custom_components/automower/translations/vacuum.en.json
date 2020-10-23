@@ -1,6 +1,6 @@
 {
   "state": {
-    "automower": {
+    "automower__state": {
         "ERROR": "Error",
         "EXECUTING_PARK": "Parking...",
         "EXECUTING_START": "Starting...",

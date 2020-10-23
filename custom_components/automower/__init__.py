@@ -141,8 +141,8 @@ class AutomowerEntity(VacuumEntity):
 
     @property
     def device_class(self):
-        """Return the device class of the automower (same as status)."""
-        return "automower"
+        """Return the device class of the automower state."""
+        return f"{DOMAIN}__state"
 
     @property
     def device_info(self):
