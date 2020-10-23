@@ -40,7 +40,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if DOMAIN not in hass.data:
         hass.data[DOMAIN] = {"entities": []}
 
-#    hass.data[DOMAIN][entry.entry_id] = HUSMOW_API()
+    hass.data[DOMAIN][entry.entry_id] = HUSMOW_API()
     api = HUSMOW_API()
     api.login(entry.data.get(CONF_USERNAME), entry.data.get(CONF_PASSWORD))
 
