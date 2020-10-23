@@ -7,7 +7,7 @@ from homeassistant.util import slugify
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_ICON, CONF_USERNAME, CONF_PASSWORD
+from homeassistant.const import CONF_ICON, CONF_USERNAME, CONF_PASSWORD, ATTR_BATTERY_CHARGING, ATTR_BATTERY_LEVEL, ATTR_STATE
 from homeassistant.core import HomeAssistant
 from pyhusmow import API as HUSMOW_API
 from homeassistant.components.vacuum import (
@@ -129,10 +129,10 @@ class AutomowerEntity(VacuumEntity):
         """Return the icon for the frontend based on the status."""
         return STATUSES.get(self._mower_status, {}).get('icon', DEFAULT_ICON)
 
-    @property
-    def status(self):
-        """Return the status of the automower as a nice formatted text (for vacuum platform)."""
-        return self._mower_status.lower()
+    # @property
+    # def status(self):
+    #     """Return the status of the automower as a nice formatted text (for vacuum platform)."""
+    #     return self._mower_status.lower()
 
     @property
     def state(self):
@@ -178,20 +178,21 @@ class AutomowerEntity(VacuumEntity):
             ignored_attributes.extend(['lastErrorCode', 'lastErrorCodeTimestamp', 'lastErrorMessage'])
         if attributes['nextStartSource'] == 'NO_SOURCE':
             ignored_attributes.append('nextStartTimestamp')
-
+        attributes[ATTR_BATTERY_LEVEL] = self._state.get('batteryPercent', 100)
+        attributes['status'] = self.state
         return sorted({ k: v for k, v in attributes.items() if not k in ignored_attributes }.items())
 
-    @property
-    def battery(self):
-        """Return the battery level of the automower (for device_tracker)."""
-        if self._state == None:
-            return 100
-        return self._state.get('batteryPercent', 100)
+    # @property
+    # def battery(self):
+    #     """Return the battery level of the automower (for device_tracker)."""
+    #     if self._state == None:
+    #         return 100
+    #     return self._state.get('batteryPercent', 100)
 
-    @property
-    def battery_level(self):
-        """Return the battery level of the automower (for vacuum)."""
-        return self.battery
+    # @property
+    # def battery_level(self):
+    #     """Return the battery level of the automower (for vacuum)."""
+    #     return self.battery
 
     @property
     def supported_features(self):
