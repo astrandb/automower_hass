@@ -261,7 +261,7 @@ class AutomowerDevice(VacuumEntity):
         if not self.is_on:
             _LOGGER.debug("Sending START command to: %s", self._name)
             self._api.control('START')
-            self._mower_status = STATUS_EXECUTING_START
+            self._mower_status = STATUS_EXECUTING_START.lower()
             self.schedule_update_ha_state()
 
     def turn_off(self, **kwargs):
@@ -269,7 +269,7 @@ class AutomowerDevice(VacuumEntity):
         if self.is_on:
             _LOGGER.debug("Sending STOP command to: %s", self._name)
             self._api.control('STOP')
-            self._mower_status = STATUS_EXECUTING_STOP
+            self._mower_status = STATUS_EXECUTING_STOP.lower()
             self.schedule_update_ha_state()
 
     def start_pause(self, **kwargs):
@@ -287,7 +287,7 @@ class AutomowerDevice(VacuumEntity):
         """Park the automower."""
         _LOGGER.debug("Sending PARK command to: %s", self._name)
         self._api.control('PARK')
-        self._mower_status = STATUS_EXECUTING_PARK
+        self._mower_status = STATUS_EXECUTING_PARK.lower()
         self.schedule_update_ha_state()
 
 
@@ -305,7 +305,7 @@ class AutomowerDevice(VacuumEntity):
         # remain active until there's an actual change from the
         # API.
         if self._stored_timestamp != self._state['storedTimestamp']:
-            self._mower_status = self._state['mowerStatus']
+            self._mower_status = self._state['mowerStatus'].lower()
             self._stored_timestamp = self._state['storedTimestamp']
         if self._see is not None:
             self.update_see()

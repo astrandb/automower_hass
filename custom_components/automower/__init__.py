@@ -90,7 +90,7 @@ class AutomowerEntity(VacuumEntity):
         self._name = meta['name']
         self._model = meta['model']
         self._state = meta['status']
-        self._mower_status = self._state['mowerStatus']
+        self._mower_status = self._state['mowerStatus'].lower()
         self._stored_timestamp = None
         self._see = None
 
