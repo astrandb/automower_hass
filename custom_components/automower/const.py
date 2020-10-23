@@ -35,8 +35,8 @@ STATUSES = {
     STATUS_OK_CUTTING_MANUAL:       { 'icon': DEFAULT_ICON,         'message': 'Cutting (manual timer override)' },
     STATUS_OK_LEAVING:              { 'icon': DEFAULT_ICON,         'message': 'Leaving charging station' },
     STATUS_PAUSED:                  { 'icon': 'mdi:pause',          'message': 'Paused' },
-    STATUS_PARKED_TIMER:            { 'icon': 'mdi:timetable',      'message': 'Parked due to timer' },
-    STATUS_PARKED_AUTOTIMER:        { 'icon': 'mdi:timetable',      'message': 'Parked due to weather timer' },
+    STATUS_PARKED_TIMER:            { 'icon': DEFAULT_ICON,         'message': 'Parked due to timer' },
+    STATUS_PARKED_AUTOTIMER:        { 'icon': DEFAULT_ICON,         'message': 'Parked due to weather timer' },
     STATUS_PARKED_PARKED_SELECTED:  { 'icon': 'mdi:sleep',          'message': 'Parked manually' },
     STATUS_OK_SEARCHING:            { 'icon': 'mdi:magnify',        'message': 'Going to charging station' },
     STATUS_EXECUTING_START:         { 'icon': 'mdi:dots-horizontal','message': 'Starting...' },
@@ -78,6 +78,3 @@ IGNORED_API_STATE_ATTRIBUTES = [
 SUPPORTED_FEATURES = SUPPORT_TURN_ON | SUPPORT_TURN_OFF | SUPPORT_PAUSE | \
                      SUPPORT_STOP | SUPPORT_RETURN_HOME | \
                      SUPPORT_STATUS | SUPPORT_BATTERY
-
-
-
