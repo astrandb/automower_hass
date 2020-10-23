@@ -90,7 +90,7 @@ class AutomowerEntity(VacuumEntity):
         self._name = meta['name']
         self._model = meta['model']
         self._state = meta['status']
-        self._mower_status = self._state['mowerStatus'].lower()
+        self._mower_status = self._state['mowerStatus']
         self._stored_timestamp = None
         self._see = None
 
@@ -132,12 +132,12 @@ class AutomowerEntity(VacuumEntity):
     @property
     def status(self):
         """Return the status of the automower as a nice formatted text (for vacuum platform)."""
-        return self._mower_status
+        return self._mower_status.lower()
 
     @property
     def state(self):
         """Return the state of the automower (same as status)."""
-        return self._mower_status
+        return self._mower_status.lower()
 
     @property
     def device_class(self):
