@@ -1,24 +1,6 @@
 {
   "state": {
     "automower__state": {
-        "ERROR": "Error",
-        "EXECUTING_PARK": "Parking...",
-        "EXECUTING_START": "Starting...",
-        "EXECUTING_STOP": "Stopping...",
-        "OFF_DISABLED": "Off",
-        "OFF_HATCH_CLOSED_DISABLED": "Stopped not on base",
-        "OFF_HATCH_OPEN": "Hatch open",
-        "OK_CHARGING": "Charging",
-        "OK_CUTTING": "Cutting",
-        "OK_CUTTING_NOT_AUTO": "Cutting manually",
-        "OK_LEAVING": "Leaving base",
-        "OK_SEARCHING": "Searching for base",
-        "PARKED_TIMER": "Parked by timer",
-        "PARKED_AUTO_TIMER": "Parked by timer",
-        "PARKED_PARKED_SELECTED": "Parked manually",
-        "PAUSED": "Paused"
-      },
-    "_": {
       "ERROR": "Error",
       "EXECUTING_PARK": "Parking...",
       "EXECUTING_START": "Starting...",

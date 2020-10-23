@@ -1,7 +1,6 @@
 {
-  "state":
-  {"automower__state":
-    {
+  "state": {
+    "automower__state": {
       "ERROR": "Fel",
       "EXECUTING_PARK": "Parkerar...",
       "EXECUTING_START": "Startar...",
