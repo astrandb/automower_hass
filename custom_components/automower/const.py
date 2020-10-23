@@ -4,6 +4,7 @@ DOMAIN = "automower"
 DEFAULT_ICON = 'mdi:robot-mower'
 VENDOR = "Husqvarna"
 VACUUM_SCAN_INTERVAL = 60
+VERSION = "0.4.2"
 
 from homeassistant.components.vacuum import (
     SUPPORT_BATTERY, SUPPORT_PAUSE, SUPPORT_RETURN_HOME,
