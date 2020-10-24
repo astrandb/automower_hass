@@ -42,7 +42,7 @@ async def validate_input(hass: core.HomeAssistant, data):
     #     your_validate_func, data["username"], data["password"]
     # )
 
-#    hub = PlaceholderHub(data["host"])
+    #    hub = PlaceholderHub(data["host"])
     api = HUSMOW_API()
     try:
         api.login(data.get("username"), data.get("password"))
@@ -52,7 +52,6 @@ async def validate_input(hass: core.HomeAssistant, data):
 
     # for robot in robots:
     #     hass.data[DOMAIN]['devices'].append(AutomowerDevice(robot, api))
-
 
     # if not await hub.authenticate(data["username"], data["password"]):
     #     raise InvalidAuth

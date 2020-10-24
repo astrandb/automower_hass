@@ -7,20 +7,46 @@ from homeassistant.util import slugify
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_ICON, CONF_USERNAME, CONF_PASSWORD, ATTR_BATTERY_CHARGING, ATTR_BATTERY_LEVEL, ATTR_STATE
+from homeassistant.const import (
+    CONF_ICON,
+    CONF_USERNAME,
+    CONF_PASSWORD,
+    ATTR_BATTERY_CHARGING,
+    ATTR_BATTERY_LEVEL,
+    ATTR_STATE,
+)
 from homeassistant.core import HomeAssistant
 from pyhusmow import API as HUSMOW_API
 from homeassistant.components.vacuum import (
-    SUPPORT_BATTERY, SUPPORT_PAUSE, SUPPORT_RETURN_HOME,
-    SUPPORT_STATUS, SUPPORT_STOP, SUPPORT_TURN_OFF,
-    SUPPORT_TURN_ON, VacuumEntity)
+    SUPPORT_BATTERY,
+    SUPPORT_PAUSE,
+    SUPPORT_RETURN_HOME,
+    SUPPORT_STATUS,
+    SUPPORT_STOP,
+    SUPPORT_TURN_OFF,
+    SUPPORT_TURN_ON,
+    VacuumEntity,
+)
 
 from .const import (
-    DOMAIN, STATUSES, MODELS, DEFAULT_ICON, IGNORED_API_STATE_ATTRIBUTES,
-    ERROR_MESSAGES, SUPPORTED_FEATURES, STATUS_EXECUTING_PARK, STATUS_EXECUTING_START,
-    STATUS_EXECUTING_STOP, STATUS_OK_CUTTING, STATUS_OK_LEAVING, STATUS_OK_SEARCHING,
-    STATUS_OK_CUTTING_MANUAL, STATUS_OK_CHARGING, VENDOR
+    DOMAIN,
+    STATUSES,
+    MODELS,
+    DEFAULT_ICON,
+    IGNORED_API_STATE_ATTRIBUTES,
+    ERROR_MESSAGES,
+    SUPPORTED_FEATURES,
+    STATUS_EXECUTING_PARK,
+    STATUS_EXECUTING_START,
+    STATUS_EXECUTING_STOP,
+    STATUS_OK_CUTTING,
+    STATUS_OK_LEAVING,
+    STATUS_OK_SEARCHING,
+    STATUS_OK_CUTTING_MANUAL,
+    STATUS_OK_CHARGING,
+    VENDOR,
 )
+
 CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema({})}, extra=vol.ALLOW_EXTRA)
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,20 +68,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     hass.data[DOMAIN][entry.entry_id] = HUSMOW_API()
     api = HUSMOW_API()
-#    username = entry.data.get(CONF_USERNAME)
-#    password = entry.data.get(CONF_PASSWORD)
-#    await hass.async_add_executor_job(api.login(username, password))
+    #    username = entry.data.get(CONF_USERNAME)
+    #    password = entry.data.get(CONF_PASSWORD)
+    #    await hass.async_add_executor_job(api.login(username, password))
     api.login(entry.data.get(CONF_USERNAME), entry.data.get(CONF_PASSWORD))
 
     robots = api.list_robots()
-#    robots = await hass.async_add_executor_job(hass.data[DOMAIN][entry.entry_id].list_robots())
+    #    robots = await hass.async_add_executor_job(hass.data[DOMAIN][entry.entry_id].list_robots())
     if not robots:
         return False
 
     for robot in robots:
         _LOGGER.debug("Robot: %s", robot)
-        hass.data[DOMAIN]['entities'].append(AutomowerEntity(robot, api))
-#    return True
+        hass.data[DOMAIN]["entities"].append(AutomowerEntity(robot, api))
+    #    return True
 
     for component in PLATFORMS:
         hass.async_create_task(
@@ -80,17 +106,18 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     return unload_ok
 
+
 class AutomowerEntity(VacuumEntity):
     """Representation of an Automower device."""
 
     def __init__(self, meta, api):
         """Initialisation of the Automower device."""
-        _LOGGER.debug("Initializing device: %s", meta['name'])
-        self._id = meta['id']
-        self._name = meta['name']
-        self._model = meta['model']
-        self._state = meta['status']
-        self._mower_status = self._state['mowerStatus']
+        _LOGGER.debug("Initializing device: %s", meta["name"])
+        self._id = meta["id"]
+        self._name = meta["name"]
+        self._model = meta["model"]
+        self._state = meta["status"]
+        self._mower_status = self._state["mowerStatus"]
         self._stored_timestamp = None
         self._see = None
 
@@ -122,12 +149,12 @@ class AutomowerEntity(VacuumEntity):
     @property
     def model(self):
         """Return the model of the Automower."""
-        return MODELS.get(self._model,self._model)
+        return MODELS.get(self._model, self._model)
 
     @property
     def icon(self):
         """Return the icon for the frontend based on the status."""
-        return STATUSES.get(self._mower_status, {}).get('icon', DEFAULT_ICON)
+        return STATUSES.get(self._mower_status, {}).get("icon", DEFAULT_ICON)
 
     # @property
     # def status(self):
@@ -150,7 +177,7 @@ class AutomowerEntity(VacuumEntity):
         info = {"identifiers": {(DOMAIN, self._id)}, "name": self._name}
         if True:
             info["manufacturer"] = VENDOR
-            info["model"] = MODELS.get(self._model,self._model)
+            info["model"] = MODELS.get(self._model, self._model)
         return info
 
     @property
@@ -162,25 +189,33 @@ class AutomowerEntity(VacuumEntity):
         attributes = dict(self._state)
 
         # Parse timestamps
-        for key in ['lastErrorCodeTimestamp', 'nextStartTimestamp', 'storedTimestamp']:
+        for key in ["lastErrorCodeTimestamp", "nextStartTimestamp", "storedTimestamp"]:
             if key in attributes:
                 if isinstance(attributes[key], int):
                     # Sometimes(tm), Husqvarna will return a timestamp in millis :(
                     if attributes[key] > 999999999999:
                         attributes[key] /= 1000.0
-                    attributes[key] = datetime.fromtimestamp(attributes[key]).strftime("%Y-%m-%d %H:%M")
+                    attributes[key] = datetime.fromtimestamp(attributes[key]).strftime(
+                        "%Y-%m-%d %H:%M"
+                    )
 
         # Ignore some unneeded attributes & format error messages
         ignored_attributes = list(IGNORED_API_STATE_ATTRIBUTES)
-        if attributes['lastErrorCode'] > 0:
-            attributes['lastErrorMessage'] = ERROR_MESSAGES.get(attributes['lastErrorCode'])
+        if attributes["lastErrorCode"] > 0:
+            attributes["lastErrorMessage"] = ERROR_MESSAGES.get(
+                attributes["lastErrorCode"]
+            )
         else:
-            ignored_attributes.extend(['lastErrorCode', 'lastErrorCodeTimestamp', 'lastErrorMessage'])
-        if attributes['nextStartSource'] == 'NO_SOURCE':
-            ignored_attributes.append('nextStartTimestamp')
-        attributes[ATTR_BATTERY_LEVEL] = self._state.get('batteryPercent', 100)
-        attributes['status'] = self.state
-        return sorted({ k: v for k, v in attributes.items() if not k in ignored_attributes }.items())
+            ignored_attributes.extend(
+                ["lastErrorCode", "lastErrorCodeTimestamp", "lastErrorMessage"]
+            )
+        if attributes["nextStartSource"] == "NO_SOURCE":
+            ignored_attributes.append("nextStartTimestamp")
+        attributes[ATTR_BATTERY_LEVEL] = self._state.get("batteryPercent", 100)
+        attributes["status"] = self.state
+        return sorted(
+            {k: v for k, v in attributes.items() if not k in ignored_attributes}.items()
+        )
 
     # @property
     # def battery(self):
@@ -202,12 +237,12 @@ class AutomowerEntity(VacuumEntity):
     @property
     def lat(self):
         """Return the current latitude of the automower."""
-        return self._state['lastLocations'][0]['latitude']
+        return self._state["lastLocations"][0]["latitude"]
 
     @property
     def lon(self):
         """Return the current longitude of the automower."""
-        return self._state['lastLocations'][0]['longitude']
+        return self._state["lastLocations"][0]["longitude"]
 
     @property
     def should_poll(self):
@@ -218,14 +253,19 @@ class AutomowerEntity(VacuumEntity):
     def is_on(self):
         """Return true if automower is starting, charging, cutting, or returning home."""
         return self._mower_status in [
-            STATUS_EXECUTING_START, STATUS_OK_CHARGING,
-            STATUS_OK_CUTTING, STATUS_OK_LEAVING, STATUS_OK_SEARCHING, STATUS_OK_CUTTING_MANUAL]
+            STATUS_EXECUTING_START,
+            STATUS_OK_CHARGING,
+            STATUS_OK_CUTTING,
+            STATUS_OK_LEAVING,
+            STATUS_OK_SEARCHING,
+            STATUS_OK_CUTTING_MANUAL,
+        ]
 
     def turn_on(self, **kwargs):
         """Start the automower unless on."""
         if not self.is_on:
             _LOGGER.debug("Sending START command to: %s", self._name)
-            self._api.control('START')
+            self._api.control("START")
             self._mower_status = STATUS_EXECUTING_START
             self.schedule_update_ha_state()
 
@@ -233,7 +273,7 @@ class AutomowerEntity(VacuumEntity):
         """Stop the automower unless off."""
         if self.is_on:
             _LOGGER.debug("Sending STOP command to: %s", self._name)
-            self._api.control('STOP')
+            self._api.control("STOP")
             self._mower_status = STATUS_EXECUTING_STOP
             self.schedule_update_ha_state()
 
@@ -251,10 +291,9 @@ class AutomowerEntity(VacuumEntity):
     def return_to_base(self, **kwargs):
         """Park the automower."""
         _LOGGER.debug("Sending PARK command to: %s", self._name)
-        self._api.control('PARK')
+        self._api.control("PARK")
         self._mower_status = STATUS_EXECUTING_PARK
         self.schedule_update_ha_state()
-
 
     def set_see(self, see):
         self._see = see
@@ -269,9 +308,9 @@ class AutomowerEntity(VacuumEntity):
         # This allows for our internal STATUS_EXECUTING_* to
         # remain active until there's an actual change from the
         # API.
-        if self._stored_timestamp != self._state['storedTimestamp']:
-            self._mower_status = self._state['mowerStatus']
-            self._stored_timestamp = self._state['storedTimestamp']
+        if self._stored_timestamp != self._state["storedTimestamp"]:
+            self._mower_status = self._state["mowerStatus"]
+            self._stored_timestamp = self._state["storedTimestamp"]
         if self._see is not None:
             self.update_see()
 
@@ -281,12 +320,14 @@ class AutomowerEntity(VacuumEntity):
         self._see(
             dev_id=self.dev_id,
             host_name=self.name,
-#            battery=self.battery,
+            #            battery=self.battery,
             gps=(self.lat, self.lon),
             attributes={
-                'status': self.status,
-                'id': self.dev_id,
-                'name': self.name,
+                "status": self.status,
+                "id": self.dev_id,
+                "name": self.name,
                 CONF_ICON: self.icon,
-                'vendor': VENDOR,
-                'model': self.model})
+                "vendor": VENDOR,
+                "model": self.model,
+            },
+        )
