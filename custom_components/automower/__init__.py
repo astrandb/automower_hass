@@ -1,22 +1,10 @@
 """The Automower integration."""
 import asyncio
-import logging, copy
+import copy
+import logging
 from datetime import datetime
 
-from homeassistant.util import slugify
 import voluptuous as vol
-
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import (
-    CONF_ICON,
-    CONF_USERNAME,
-    CONF_PASSWORD,
-    ATTR_BATTERY_CHARGING,
-    ATTR_BATTERY_LEVEL,
-    ATTR_STATE,
-)
-from homeassistant.core import HomeAssistant
-from pyhusmow import API as HUSMOW_API
 from homeassistant.components.vacuum import (
     SUPPORT_BATTERY,
     SUPPORT_PAUSE,
@@ -27,23 +15,35 @@ from homeassistant.components.vacuum import (
     SUPPORT_TURN_ON,
     VacuumEntity,
 )
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import (
+    ATTR_BATTERY_CHARGING,
+    ATTR_BATTERY_LEVEL,
+    ATTR_STATE,
+    CONF_ICON,
+    CONF_PASSWORD,
+    CONF_USERNAME,
+)
+from homeassistant.core import HomeAssistant
+from homeassistant.util import slugify
+from pyhusmow import API as HUSMOW_API
 
 from .const import (
-    DOMAIN,
-    STATUSES,
-    MODELS,
     DEFAULT_ICON,
-    IGNORED_API_STATE_ATTRIBUTES,
+    DOMAIN,
     ERROR_MESSAGES,
-    SUPPORTED_FEATURES,
+    IGNORED_API_STATE_ATTRIBUTES,
+    MODELS,
     STATUS_EXECUTING_PARK,
     STATUS_EXECUTING_START,
     STATUS_EXECUTING_STOP,
+    STATUS_OK_CHARGING,
     STATUS_OK_CUTTING,
+    STATUS_OK_CUTTING_MANUAL,
     STATUS_OK_LEAVING,
     STATUS_OK_SEARCHING,
-    STATUS_OK_CUTTING_MANUAL,
-    STATUS_OK_CHARGING,
+    STATUSES,
+    SUPPORTED_FEATURES,
     VENDOR,
 )
 
