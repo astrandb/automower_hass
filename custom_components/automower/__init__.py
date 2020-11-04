@@ -183,7 +183,7 @@ class AutomowerEntity(VacuumEntity):
     @property
     def device_state_attributes(self):
         """Return the state attributes of the automower."""
-        if self._state == None:
+        if self._state is None:
             return {}
 
         attributes = dict(self._state)
@@ -214,7 +214,7 @@ class AutomowerEntity(VacuumEntity):
         attributes[ATTR_BATTERY_LEVEL] = self._state.get("batteryPercent", 100)
         attributes["status"] = self.state
         return sorted(
-            {k: v for k, v in attributes.items() if not k in ignored_attributes}.items()
+            {k: v for k, v in attributes.items() if k not in ignored_attributes}.items()
         )
 
     # @property

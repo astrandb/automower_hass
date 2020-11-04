@@ -7,9 +7,9 @@ https://home-assistant.io/components/automower/
 
 import copy
 import logging
-import voluptuous as vol
-
 from datetime import datetime
+
+import voluptuous as vol
 from homeassistant.const import (
     CONF_ICON,
     CONF_PASSWORD,

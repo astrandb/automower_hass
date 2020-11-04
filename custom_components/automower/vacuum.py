@@ -1,5 +1,6 @@
 """Vacuum for Husqvarna Automowers"""
 from datetime import timedelta
+
 from .const import DOMAIN, VACUUM_SCAN_INTERVAL
 
 SCAN_INTERVAL = timedelta(seconds=VACUUM_SCAN_INTERVAL)

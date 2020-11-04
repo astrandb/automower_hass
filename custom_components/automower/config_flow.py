@@ -1,10 +1,9 @@
 """Config flow for Automower integration."""
 import logging
-from pyhusmow import API as HUSMOW_API
 
 import voluptuous as vol
-
 from homeassistant import config_entries, core, exceptions
+from pyhusmow import API as HUSMOW_API
 
 from .const import DOMAIN  # pylint:disable=unused-import
 

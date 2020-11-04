@@ -1,11 +1,5 @@
 """Constants for the Automower integration."""
 
-DOMAIN = "automower"
-DEFAULT_ICON = "mdi:robot-mower"
-VENDOR = "Husqvarna"
-VACUUM_SCAN_INTERVAL = 60
-VERSION = "0.4.2"
-
 from homeassistant.components.vacuum import (
     SUPPORT_BATTERY,
     SUPPORT_PAUSE,
@@ -15,6 +9,12 @@ from homeassistant.components.vacuum import (
     SUPPORT_TURN_OFF,
     SUPPORT_TURN_ON,
 )
+
+DOMAIN = "automower"
+DEFAULT_ICON = "mdi:robot-mower"
+VENDOR = "Husqvarna"
+VACUUM_SCAN_INTERVAL = 60
+VERSION = "0.4.2"
 
 # TODO: Add more statuses as we observe them
 STATUS_ERROR = "ERROR"
