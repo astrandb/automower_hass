@@ -5,21 +5,10 @@ import logging
 from datetime import datetime
 
 import voluptuous as vol
-from homeassistant.components.vacuum import (
-    SUPPORT_BATTERY,
-    SUPPORT_PAUSE,
-    SUPPORT_RETURN_HOME,
-    SUPPORT_STATUS,
-    SUPPORT_STOP,
-    SUPPORT_TURN_OFF,
-    SUPPORT_TURN_ON,
-    VacuumEntity,
-)
+from homeassistant.components.vacuum import VacuumEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
-    ATTR_BATTERY_CHARGING,
     ATTR_BATTERY_LEVEL,
-    ATTR_STATE,
     CONF_ICON,
     CONF_PASSWORD,
     CONF_USERNAME,
