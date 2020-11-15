@@ -57,20 +57,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     hass.data[DOMAIN][entry.entry_id] = HUSMOW_API()
     api = HUSMOW_API()
-    #    username = entry.data.get(CONF_USERNAME)
-    #    password = entry.data.get(CONF_PASSWORD)
-    #    await hass.async_add_executor_job(api.login(username, password))
-    api.login(entry.data.get(CONF_USERNAME), entry.data.get(CONF_PASSWORD))
+    await hass.async_add_executor_job(
+        api.login, entry.data[CONF_USERNAME], entry.data[CONF_PASSWORD]
+    )
 
-    robots = api.list_robots()
-    #    robots = await hass.async_add_executor_job(hass.data[DOMAIN][entry.entry_id].list_robots())
+    robots = await hass.async_add_executor_job(api.list_robots)
     if not robots:
         return False
 
     for robot in robots:
         _LOGGER.debug("Robot: %s", robot)
-        hass.data[DOMAIN]["entities"].append(AutomowerEntity(robot, api))
-    #    return True
+        hass.data[DOMAIN]["entities"].append(await hass.async_add_executor_job(AutomowerEntity, robot, api))
 
     for component in PLATFORMS:
         hass.async_create_task(
