@@ -11,7 +11,7 @@ This integration should be installed with HACS. It is not included in the offici
 Go to Configuration->Integrations in Home Assistant. Click the orange plus and add Automower and fill in the form.
 
 ## Known Problems and Limitations
-HA will issue a warning during startup that I/O is done in event loop
+Automower status is not translated in vacuum card
 
 ## Acknowledgements
 

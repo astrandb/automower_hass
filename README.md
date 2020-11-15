@@ -14,7 +14,7 @@ If you prefer manual installation you will probablly not need any instructions.
 Go to Configuration->Integrations in Home Assistant. Click the orange plus and add Automower and fill in the form.
 
 ## Known Problems and Limitations
-HA will issue a warning during startup that I/O is done in event loop
+Automower status is not translated in vacuum card
 
 ## Acknowledgements
 
