@@ -15,4 +15,4 @@ Automower status is not translated in vacuum card
 
 ## Acknowledgements
 
-This integration is inspired by @walthowd and others
+This integration is inspired by @walthowd, @yeah and others
