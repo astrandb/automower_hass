@@ -1,4 +1,4 @@
-[![automower](https://img.shields.io/github/release/astrandb/automower_hass)](https://github.com/astrandb/automower_hass) [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs) ![Maintenance](https://img.shields.io/maintenance/yes/2020.svg)
+[![automower](https://img.shields.io/github/release/astrandb/automower_hass)](https://github.com/astrandb/automower_hass) [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs) ![Maintenance](https://img.shields.io/maintenance/yes/2020.svg) ![Validate with hassfest](https://github.com/astrandb/automower_hass/workflows/Validate%20with%20hassfest/badge.svg)
 # Husqvarna Automower for Home Assistant
 
 This integration uses the inofficial API, it is simple but it works. It is not officially supported by Husqvarna so it may be closed down anytime.
