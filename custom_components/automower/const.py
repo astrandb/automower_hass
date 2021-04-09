@@ -30,6 +30,7 @@ STATUS_PAUSED = "PAUSED"
 STATUS_EXECUTING_PARK = "EXECUTING_PARK"
 STATUS_EXECUTING_START = "EXECUTING_START"
 STATUS_EXECUTING_STOP = "EXECUTING_STOP"
+STATUS_WAIT_POWER_UP =  "WAIT_POWER_UP"
 STATUS_OFF_HATCH_OPEN = "OFF_HATCH_OPEN"
 STATUS_OFF_HATCH_CLOSED = "OFF_HATCH_CLOSED_DISABLED"
 STATUS_OFF_DISABLED = "OFF_DISABLED"
@@ -56,6 +57,7 @@ STATUSES = {
     },
     STATUS_EXECUTING_START: {"icon": "mdi:dots-horizontal", "message": "Starting..."},
     STATUS_EXECUTING_STOP: {"icon": "mdi:dots-horizontal", "message": "Stopping..."},
+    STATUS_WAIT_POWER_UP:  { 'icon': 'mdi:dots-horizontal','message': 'Powering up...' },
     STATUS_EXECUTING_PARK: {
         "icon": "mdi:dots-horizontal",
         "message": "Preparing to park...",
