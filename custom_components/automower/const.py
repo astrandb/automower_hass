@@ -37,20 +37,20 @@ STATUS_OFF_DISABLED = "OFF_DISABLED"
 
 STATUSES = {
     STATUS_ERROR: {"icon": "mdi:alert", "message": "Error"},
-    STATUS_OK_CHARGING: {"icon": "mdi:power-plug", "message": "Charging"},
-    STATUS_OK_CUTTING: {"icon": DEFAULT_ICON, "message": "Cutting"},
+    STATUS_OK_CHARGING: {"icon": "mdi:battery-charging", "message": "Charging"},
+    STATUS_OK_CUTTING: {"icon": DEFAULT_ICON, "message": "Mowing"},
     STATUS_OK_CUTTING_MANUAL: {
         "icon": DEFAULT_ICON,
-        "message": "Cutting (manual timer override)",
+        "message": "Mowing (manual timer override)",
     },
     STATUS_OK_LEAVING: {"icon": DEFAULT_ICON, "message": "Leaving charging station"},
     STATUS_PAUSED: {"icon": "mdi:pause", "message": "Paused"},
-    STATUS_PARKED_TIMER: {"icon": DEFAULT_ICON, "message": "Parked due to timer"},
+    STATUS_PARKED_TIMER: {"icon": DEFAULT_ICON, "message": "Parked (week timer)"},
     STATUS_PARKED_AUTOTIMER: {
-        "icon": DEFAULT_ICON,
-        "message": "Parked due to weather timer",
+        "icon": "mdi:weather-partly-cloudy",
+        "message": "Parked (weather timer)",
     },
-    STATUS_PARKED_PARKED_SELECTED: {"icon": "mdi:sleep", "message": "Parked manually"},
+    STATUS_PARKED_PARKED_SELECTED: {"icon": "mdi:garage", "message": "Parked (manual)"},
     STATUS_OK_SEARCHING: {
         "icon": "mdi:magnify",
         "message": "Going to charging station",
