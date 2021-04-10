@@ -287,9 +287,8 @@ class AutomowerEntity(VacuumEntity):
 
     def update(self):
         """Update the automower state using the API."""
-        _LOGGER.debug("Fetching state from API: %s", self._name)
         self._state = self._api.status()
-
+        _LOGGER.debug("Fetched state from API: %s: %s", self._name, self._state)
         # Do not update internal mower status and timestamp if
         # stored timestamp equals the one we last saw.
         # This allows for our internal STATUS_EXECUTING_* to
