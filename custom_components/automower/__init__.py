@@ -68,7 +68,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     for robot in robots:
         _LOGGER.debug("Robot: %s", robot)
-        hass.data[DOMAIN]["entities"].append(await hass.async_add_executor_job(AutomowerEntity, robot, api))
+        hass.data[DOMAIN]["entities"].append(
+            await hass.async_add_executor_job(AutomowerEntity, robot, api)
+        )
 
     for component in PLATFORMS:
         hass.async_create_task(
@@ -244,6 +246,7 @@ class AutomowerEntity(VacuumEntity):
             STATUS_OK_CHARGING,
             STATUS_OK_CUTTING,
             STATUS_OK_LEAVING,
+            STATUS_WAIT_POWER_UP,
             STATUS_OK_SEARCHING,
             STATUS_OK_CUTTING_MANUAL,
         ]
