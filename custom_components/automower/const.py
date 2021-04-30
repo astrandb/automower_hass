@@ -14,7 +14,7 @@ DOMAIN = "automower"
 DEFAULT_ICON = "mdi:robot-mower"
 VENDOR = "Husqvarna"
 VACUUM_SCAN_INTERVAL = 60
-VERSION = "0.5.2"
+VERSION = "0.5.3"
 
 # TODO: Add more statuses as we observe them
 STATUS_ERROR = "ERROR"
