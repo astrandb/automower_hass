@@ -104,7 +104,7 @@ class AutomowerEntity(VacuumEntity):
         _LOGGER.debug("Initializing device: %s", meta["name"])
         self._id = meta["id"]
         self._name = meta["name"]
-        self._model = meta["model"]
+        self._model = meta.get("model", "?")
         self._state = meta["status"]
         self._mower_status = self._state["mowerStatus"]
         self._stored_timestamp = None
