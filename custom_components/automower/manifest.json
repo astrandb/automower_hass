@@ -1,7 +1,7 @@
 {
   "domain": "automower",
   "name": "Automower",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "config_flow": true,
   "documentation": "https://github.com/astrandb/automower_hass",
   "issue_tracker": "https://github.com/astrandb/automower_hass/issues",
